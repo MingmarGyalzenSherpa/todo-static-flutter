@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:flutter/material.dart';
 import 'package:todo_app/todo.dart';
 
@@ -10,8 +12,8 @@ class MyApp extends StatefulWidget {
 
 class _MyWidgetState extends State<MyApp> {
   List<Todo> todos = [
-    Todo(id: 1, task: "go home"),
-    Todo(id: 2, task: "Buy potato")
+    Todo(task: "go home", isCompleted: true),
+    Todo(task: "Buy potato")
   ];
   bool isChecked = false;
 
@@ -39,17 +41,56 @@ class _MyWidgetState extends State<MyApp> {
                     children: [
                       Checkbox(
                           value: todos[index].isCompleted,
-                          onChanged: (bool? value) {}),
-                      SizedBox(
+                          activeColor: Colors.red,
+                          onChanged: (bool? value) {
+                            setState(() {
+                              todos[index].isCompleted = value!;
+                            });
+                          }),
+                      const SizedBox(
                         width: 20,
                       ),
-                      Text(todos[index].task),
+                      Text(
+                        todos[index].task,
+                        style: TextStyle(
+                          decoration: todos[index].isCompleted
+                              ? TextDecoration.lineThrough
+                              : TextDecoration.none,
+                          color: todos[index].isCompleted
+                              ? Colors.black45
+                              : Colors.black,
+                        ),
+                      ),
                     ],
                   ),
                   IconButton(
-                    icon: Icon(Icons.delete),
+                    icon: const Icon(Icons.delete),
                     color: Colors.red,
-                    onPressed: () {},
+                    onPressed: () {
+                      setState(() {
+                        //convert the List<Todo> to map
+                        //convert it to entries
+                        //map through the entry
+                        //return only the todo thats not deleted else null
+                        //filter non-null value
+                        //convert it from iterable to list
+                        todos = todos
+                            .asMap()
+                            .entries
+                            .map((entry) {
+                              var todo = entry.value;
+                              if (entry.key != index) {
+                                return Todo(
+                                    task: todo.task,
+                                    isCompleted: todo.isCompleted);
+                              } else {
+                                return null;
+                              }
+                            })
+                            .whereType<Todo>()
+                            .toList();
+                      });
+                    },
                   )
                 ],
               );
