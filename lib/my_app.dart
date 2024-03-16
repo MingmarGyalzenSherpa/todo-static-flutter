@@ -17,6 +17,8 @@ class _MyWidgetState extends State<MyApp> {
   ];
   bool isChecked = false;
 
+  final textController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -101,16 +103,74 @@ class _MyWidgetState extends State<MyApp> {
         child: FloatingActionButton(
           onPressed: () {
             AlertDialog alertDialog = AlertDialog(
-              title: Text("Change?"),
-              content: ElevatedButton(
-                child: Text('yes'),
-                onPressed: () {
-                  setState(() {
-                    isChecked = !isChecked;
-                  });
+              contentPadding:
+                  EdgeInsets.symmetric(horizontal: 25, vertical: 15),
+              actionsPadding: EdgeInsets.all(10),
+              backgroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(5)),
+              title: Text(
+                "Add a todo",
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              content: TextField(
+                autofocus: true,
+                onSubmitted: (value) {
+                  if (value != "") {
+                    setState(() {
+                      todos.insert(0, Todo(task: value));
+                    });
+                    textController.text = "";
+                  }
+
                   Navigator.pop(context);
                 },
+                controller: textController,
+                decoration: InputDecoration(
+                  hintText: "Type your todo",
+                  focusedBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(
+                      color: Colors.blue,
+                      width: 2,
+                    ),
+                  ),
+                ),
               ),
+              actions: [
+                ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        foregroundColor: Colors.blue,
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(13),
+                        )),
+                    onPressed: () {
+                      textController.text = "";
+                      Navigator.pop(context);
+                    },
+                    child: Text("Cancel")),
+                ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blue,
+                        foregroundColor: Colors.white,
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(13))),
+                    onPressed: () {
+                      if (textController.text != "") {
+                        setState(() {
+                          todos.insert(0, Todo(task: textController.text));
+                        });
+                      }
+                      Navigator.pop(context);
+                    },
+                    child: const Text("Add"))
+              ],
             );
 
             showDialog(context: context, builder: (context) => alertDialog);
